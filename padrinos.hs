@@ -22,7 +22,7 @@ habilidadesDeNeedForSpeed::[Habilidad]
 habilidadesDeNeedForSpeed = map (("jugar need for speed " ++).show) [1..]
 
 serMayor::Deseo
-serMayor unChico = unChico{edad = 18}
+serMayor = modificarEdad (\ _ -> 18)
 
 --- Punto 2
 type PadrinoMagico = Chico -> Chico
@@ -97,11 +97,11 @@ esHabilidadProhibida unaHabilidad = elem unaHabilidad habilidadesProhibidas
 algunaEsHabilidadProhibida::[Habilidad] -> Bool
 algunaEsHabilidadProhibida = any esHabilidadProhibida
 
-esDeseoProhibido::Deseo -> Chico -> Bool
-esDeseoProhibido unDeseo unChico = algunaEsHabilidadProhibida.take 5.habilidades.unDeseo $ unChico
+esDeseoProhibidoPara::Chico -> Deseo -> Bool
+esDeseoProhibidoPara unChico unDeseo = algunaEsHabilidadProhibida.take 5.habilidades.unDeseo $ unChico
 
 tieneDeseoProhibido::Chico -> Bool
-tieneDeseoProhibido unChico = any (flip esDeseoProhibido unChico).deseos $ unChico
+tieneDeseoProhibido unChico = any (esDeseoProhibidoPara unChico).deseos $ unChico
 
 infractoresDeDaRules::[Chico] -> [String]
 infractoresDeDaRules = map nombre.filter tieneDeseoProhibido
