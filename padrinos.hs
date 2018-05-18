@@ -28,10 +28,10 @@ serMayor = modificarEdad (\ _ -> 18)
 type PadrinoMagico = Chico -> Chico
 
 modificarEdad::(Int -> Int) -> Chico -> Chico
-modificarEdad modificador unChico = unChico{edad = (modificador.edad) unChico}
+modificarEdad modificador unChico = unChico{edad = modificador.edad $ unChico}
 
 wanda::PadrinoMagico
-wanda unChico = (madurar.primerDeseo unChico) unChico
+wanda unChico = madurar.primerDeseo unChico $ unChico
 
 madurar::Chico -> Chico
 madurar = modificarEdad (+1)
@@ -43,10 +43,7 @@ cosmo::PadrinoMagico
 cosmo = modificarEdad (flip div 2)
 
 muffinMagico::PadrinoMagico
-muffinMagico unChico = (foldl cumplirDeseoA unChico. deseos) unChico 
-
-cumplirDeseoA::Chico -> Deseo -> Chico
-cumplirDeseoA unChico unDeseo = unDeseo unChico
+muffinMagico unChico = foldl (flip ($)) unChico. deseos $ unChico 
 
 --En busqueda de pareja
 ---Punto 1
@@ -98,13 +95,13 @@ algunaEsHabilidadProhibida::[Habilidad] -> Bool
 algunaEsHabilidadProhibida = any esHabilidadProhibida
 
 esDeseoProhibidoPara::Chico -> Deseo -> Bool
-esDeseoProhibidoPara unChico unDeseo = (algunaEsHabilidadProhibida.primerasHabilidades 5.unDeseo) unChico
+esDeseoProhibidoPara unChico unDeseo = algunaEsHabilidadProhibida.primerasHabilidades 5.unDeseo $ unChico
 
 primerasHabilidades::Int -> Chico -> [Habilidad]
 primerasHabilidades unaCantidad = take unaCantidad.habilidades
 
 tieneDeseoProhibido::Chico -> Bool
-tieneDeseoProhibido unChico = (any (esDeseoProhibidoPara unChico).deseos) unChico
+tieneDeseoProhibido unChico = any (esDeseoProhibidoPara unChico).deseos $ unChico
 
 infractoresDeDaRules::[Chico] -> [String]
 infractoresDeDaRules = map nombre.filter tieneDeseoProhibido
