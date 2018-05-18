@@ -28,10 +28,10 @@ serMayor = modificarEdad (\ _ -> 18)
 type PadrinoMagico = Chico -> Chico
 
 modificarEdad::(Int -> Int) -> Chico -> Chico
-modificarEdad modificador unChico = unChico{edad = modificador.edad $ unChico}
+modificarEdad modificador unChico = unChico{edad = (modificador.edad) unChico}
 
 wanda::PadrinoMagico
-wanda unChico = madurar.cumplirDeseo (primerDeseo unChico) $ unChico
+wanda unChico = (madurar.primerDeseo unChico) unChico
 
 madurar::Chico -> Chico
 madurar = modificarEdad (+1)
@@ -43,10 +43,10 @@ cosmo::PadrinoMagico
 cosmo = modificarEdad (flip div 2)
 
 muffinMagico::PadrinoMagico
-muffinMagico unChico = foldl (flip cumplirDeseo) unChico. deseos $ unChico 
+muffinMagico unChico = (foldl cumplirDeseoA unChico. deseos) unChico 
 
-cumplirDeseo::Deseo -> Chico -> Chico
-cumplirDeseo = ($) 
+cumplirDeseoA::Chico -> Deseo -> Chico
+cumplirDeseoA unChico unDeseo = unDeseo unChico
 
 --En busqueda de pareja
 ---Punto 1
@@ -76,13 +76,13 @@ elQuePuedeConquistarla::Chica -> [Chico] -> Chico
 elQuePuedeConquistarla unaChica = head.filter (puedeSerConquistada unaChica)
 
 puedeSerConquistada:: Chica -> Chico -> Bool
-puedeSerConquistada unaChica unChico = condicion unaChica $ unChico
+puedeSerConquistada unaChica unChico = (condicion unaChica) unChico
 
 algunoPuedeConquistarla::Chica -> [Chico] -> Bool
 algunoPuedeConquistarla unaChica = any (puedeSerConquistada unaChica)
 
 noEsTimmy::Condicion
-noEsTimmy = not.(== "Timmy").nombre
+noEsTimmy = (/= "Timmy").nombre
 
 nuevaChica = Chica "vicky vicky" (tieneHabilidad "saber cocinar")
 
@@ -98,10 +98,13 @@ algunaEsHabilidadProhibida::[Habilidad] -> Bool
 algunaEsHabilidadProhibida = any esHabilidadProhibida
 
 esDeseoProhibidoPara::Chico -> Deseo -> Bool
-esDeseoProhibidoPara unChico unDeseo = algunaEsHabilidadProhibida.take 5.habilidades.unDeseo $ unChico
+esDeseoProhibidoPara unChico unDeseo = (algunaEsHabilidadProhibida.primerasHabilidades 5.unDeseo) unChico
+
+primerasHabilidades::Int -> Chico -> [Habilidad]
+primerasHabilidades unaCantidad = take unaCantidad.habilidades
 
 tieneDeseoProhibido::Chico -> Bool
-tieneDeseoProhibido unChico = any (esDeseoProhibidoPara unChico).deseos $ unChico
+tieneDeseoProhibido unChico = (any (esDeseoProhibidoPara unChico).deseos) unChico
 
 infractoresDeDaRules::[Chico] -> [String]
 infractoresDeDaRules = map nombre.filter tieneDeseoProhibido
